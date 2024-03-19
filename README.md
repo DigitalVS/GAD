@@ -58,13 +58,13 @@ There are other messages specific to certain commands which will be explained as
 | Key | Description
 |------|---------------
 | `I`  | Enter command line input mode
-| `ENTER` | [Step over (single step)](###-`enter`---step-over-(single-step))
+| `ENTER` | Step over (single step)
 | `.`  | Step into
-| `;`  | [Continue execution to a breakpoint](###-`;`---continue-execution-to-a-breakpoint)
+| `;`  | Continue execution to a breakpoint
 | `/`  | Skip current instruction
 | `B`  | Decrease PC value by one (Back)
 | `SPACE` | Toggle between system and GAD screens
-| `F`  | [Search forward](###-`f`---search-forward)
+| `F`  | Search forward
 | `X`  | Exit to BASIC prompt
 
 ### Flag Toggle Commands
@@ -94,13 +94,13 @@ Most of the command parameters represent memory address and are defined as up to
 | `D` | _from_ | Disassemble memory and set PC register address
 | `M` | _from_ | Memory dump
 | `E` | _from_ _hex_string_ | Edit memory
-| `B` | _no_ _addr_ | [Breakpoint set/remove/show](###-`b`---breakpoint-set/remove/show)
-| `R` | _reg_ _value_ | [Set register or register-pair value](###-`r`---set-register-or-register-pair-value)
+| `B` | _no_ _addr_ | Breakpoint set/remove/show
+| `R` | _reg_ _value_ | Set register or register-pair value
 | `C` | _from_ _to_ _length_ | Copy memory
-| `S` | _start_ _end_ _hex_string_ | [Search memory](###-`s`---search-memory)
-| `F` | _start_ _end_ _byte_ | [Fill memory](###-`f`---fill-memory)
+| `S` | _start_ _end_ _hex_string_ | Search memory
+| `F` | _start_ _end_ _byte_ | Fill memory
 | `P` | _addr_ | Proceed execution until RET instruction
-| `G` | _addr_ | [Go execute to a breakpoint](###-`g`---Go-execute-to-a-breakpoint)
+| `G` | _addr_ | Go execute to a breakpoint
 | `V` | | Print program version
 | `X` | | Exit command line mode
 
