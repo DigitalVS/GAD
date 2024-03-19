@@ -1,0 +1,4 @@
+GAD.code-workspace
+/.vscode
+/source/out
+/source/*.lst
