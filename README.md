@@ -58,13 +58,13 @@ There are other messages specific to certain commands which will be explained as
 | Key | Description
 |------|---------------
 | `I`  | Enter command line input mode
-| `ENTER` | Step over (single step)
-| `.`  | Step into
-| `;`  | Continue execution to a breakpoint
+| `ENTER` | [Step over (single step)](#enter-step-over)
+| `.`  | [Step into](#step-into)
+| `;`  | [Continue execution to a breakpoint](#continue-execution)
 | `/`  | Skip current instruction
 | `B`  | Decrease PC value by one (Back)
 | `SPACE` | Toggle between system and GAD screens
-| `F`  | Search forward
+| `F`  | [Search forward](#search-forward)
 | `X`  | Exit to BASIC prompt
 
 ### Flag Toggle Commands
@@ -91,16 +91,16 @@ Most of the command parameters represent memory address and are defined as up to
 
 | Command | Syntax | Description
 |-----|--------|------
-| `D` | _from_ | Disassemble memory and set PC register address
-| `M` | _from_ | Memory dump
-| `E` | _from_ _hex_string_ | Edit memory
-| `B` | _no_ _addr_ | Breakpoint set/remove/show
-| `R` | _reg_ _value_ | Set register or register-pair value
-| `C` | _from_ _to_ _length_ | Copy memory
-| `S` | _start_ _end_ _hex_string_ | Search memory
-| `F` | _start_ _end_ _byte_ | Fill memory
-| `P` | _addr_ | Proceed execution until RET instruction
-| `G` | _addr_ | Go execute to a breakpoint
+| `D` | _from_ | [Disassemble memory and set PC register value](#disassemble)
+| `M` | _from_ | [Memory dump](#memory-dump)
+| `E` | _from_ _hex_string_ | [Edit memory](#edit-memory)
+| `B` | _no_ _addr_ | [Breakpoint set/remove/show](#breakpoint-set)
+| `R` | _reg_ _value_ | [Set register or register-pair value](#set-register)
+| `C` | _start_ _end_ _target_ | [Copy memory](#copy-memory)
+| `S` | _start_ _end_ _hex_string_ | [Search memory](#search-memory)
+| `F` | _start_ _end_ _byte_ | [Fill memory](#fill-memory)
+| `P` | _addr_ | [Proceed execution until RET instruction](#proceed-exec)
+| `G` | _addr_ | [Go execute to a breakpoint](#go-execute)
 | `V` | | Print program version
 | `X` | | Exit command line mode
 
@@ -108,7 +108,7 @@ Most of the command parameters represent memory address and are defined as up to
 
 ## Commands Issued by Keyboard Shortcut
 
-### `ENTER` -	Step over (single step)
+<h3 id="enter-step-over">ENTER -	Step over (single step)</h3>
 
 Pressing the `ENTER` key will trigger the execution of the instruction pointed by program counter register. In case that current instruction is a subroutine call instruction, complete subroutine will be executed and new program counter value will be set to the next instruction after the call (hence the name `step over`).
 
@@ -116,19 +116,23 @@ PC value can be set at any time before or between two single step commands with 
 
 > After every instruction executed by single step command, screen blinks once. You may ask why is it necessary? Well, it is unavoidable cause for every executed instruction, GAD copies system screen to video memory, executes (or emulates if necessary) the instruction pointed by PC, copies back system screen from video memory to the buffer and regenerates its own screen contents.
 
-### `;` - Continue execution to a breakpoint
+<h3 id="step-into">. - Step into</h3>
+
+If program counter value points to subroutine call instruction (`CALL`), this command will continue the single step execution into the subroutine. For all other instructions, step into behaves the same as step over command.
+
+<h3 id="continue-execution">; - Continue execution to a breakpoint</h3>
 
 This command will continue execution from the current PC value until it reaches a breakpoint or the end of the program.
 
 > If there are no breakpoints set, or non of the breakpoints has not been hit during the execution, and end of the debugged program is reached, then execution will jump out of GAD to the BASIC prompt. To avoid this behavior consider using proceed command (`P addr`) or use single stepping instead.
 
-### `F` - Search forward
+<h3 id="search-forward">F - Search forward</h3>
 
 Search forward command is integral part of the `S` command previously issued from the command line. As its name says, it searches forward the next occurrence of the searched string from the address where it has been previously found.
 
 ## Command Line Commands
 
-### `B` -	Breakpoint set/remove/show
+<h3 id="breakpoint-set">B -	Breakpoint set/remove/show</h3>
 
 This command has multiple functions. It sets a new breakpoint, removes an existing breakpoint (only one at a time) or shows all set breakpoint addresses. Up to four breakpoints can be set simultaneously. Upon a successful completion, all command variations print breakpoint all addresses in the status line.
 
@@ -161,7 +165,46 @@ B
 
 > Addresses below `&2C00` are not allowed for breakpoints (ROM, video RAM and system variables space). If user try to set a breakpoint in that range, message `SORRY` will be displayed.
 
-### `F` - Fill memory
+<h3 id="copy-memory">C - Copy memory</h3>
+
+Copy section of memory from one memory area to another.
+
+```
+C <start address> <end address> <target address>
+```
+where _start address_ is start address of data to be copied, _end address_ is end address of data to be copied, and target is start address of new location where data will be copied.
+
+If _target address_ is between _start address_ and _end address_ command will copy memory backwards.
+
+EXAMPLE:
+
+```
+C &3000 &30FF &300A
+```
+Copies data from address &3000 up to and including &30FF ten locations higher in memory.
+
+<h3 id="disassemble">D - Disassemble memory</h3>
+
+Disassemble machine code into assembly language mnemonics and operands.
+```
+D <from address>
+```
+where _from address_ is disassembling start address and will also be set as a new PC register value which is indicated by `>` sign in first disassembled line.
+
+Disassembled memory window is meant for single step execution in the first place, but it can be used as simple assembly code viewer with basic navigation possibility with `/` (forward) and `B` (backward) commands.
+
+<h3 id="edit-memory">E - Edit memory</h3>
+
+Store hexadecimal string to memory.
+
+```
+E <from address> <hex string>
+```
+where: _from address_ is beginning address where new memory contents will be stored, and _hex string_ is a new memory contents written as a hexadecimal string with optional `&` character at the beginning, and without spaces between hexadecimal byte values.
+
+Hexadecimal string length is limited only by size of input buffer. Currently, maximum command length is 30 characters.
+
+<h3 id="fill-memory">F - Fill memory</h3>
 
 This command fills memory section with a specified byte. General format is as follows:
 
@@ -183,7 +226,7 @@ F &4000 &47FF
 ```
 This command example fills memory locations &4000 to &47FF with zeros.
 
-### `G` - Go execute to a breakpoint
+<h3 id="go-execute">G - Go execute to a breakpoint</h3>
 
 Starts execution at the specified address. Command format is:
 
@@ -194,7 +237,25 @@ where _address_ is address where execution is to start.
 
 > If there are no breakpoints set, or non of the breakpoints has not been hit during the execution, and end of the debugged program is reached, then execution will jump out of GAD to the BASIC prompt. To avoid this behavior consider using proceed command (`P addr`) or use single stepping instead.
 
-### `R` - Set register or register-pair value
+<h3 id="memory-dump">M - Memory dump</h3>
+
+Displays the hexadecimal values of a specified memory section. Dedicated memory window is used as a working space for this command and it can be scrolled up and down with up and down arrow keys.
+
+```
+M <from address>
+```
+where _from address_ is start address of memory dump.
+
+<h3 id="proceed-exec">P - Proceed execution</h3>
+
+Proceed execution until reaching the RET instruction.
+
+```
+P <address>
+```
+where _address_ is address where execution is to start. After executing RET instruction, control is transferred back to GAD.
+
+<h3 id="set-register">R - Set register or register-pair value</h3>
 
 This command sets any register (8-bit) or register-pair (16-bit) value, except `I` and `R` registers. Format of the command is:
 
@@ -219,8 +280,7 @@ This example shows that program counter can be set with `R` command, as well.
 ```
 R PC &4000
 ```
-
-### `S` - Search Memory
+<h3 id="search-memory">S - Search Memory</h3>
 
 Search command is searching through specified memory range for a set of bytes. If found, memory dump window is set to start address of a first found occurrence. Next occurrences can be searched by pressing `F` key (search forward). If searched bytes string has not been found, or there are no more subsequent occurrences, `END` message is printed into the message line.
 
@@ -239,7 +299,7 @@ Searched string length is limited only by size of input buffer. Currently, maxim
 
 Co-executing two programs on a platform without memory protection certainly imposes some rules of good behavior for both of these programs. But there are some not so obvious limitations which will be listed here as well.
 
-GAD's breakpoint is implemented as simple three bytes `CALL` instruction into a breakpoint handling routine. When inserted into the target code, this CALL instruction may overlap from one (three byte long) to three (one byte long) other instructions. Depending on a order of execution, in same rare occasions, when execution misses the breakpoint but jumps to second or third byte overlapped by `CALL` instruction, this may lead to unpredictable behavior (if there would exist one user defined `RST` vector, this could be avoided, but there is no such possibility on Galaksija).
+GAD's breakpoint is implemented as simple three bytes `CALL` instruction into a breakpoint handling routine. When inserted into the target code, this CALL instruction may overlap from one (three byte long) to three (one byte long) other instructions. Depending on an order of execution, in same rare occasions, when execution misses the breakpoint but jumps to second or third byte overlapped by `CALL` instruction, this may lead to unpredictable behavior (if there would exist one user defined `RST` vector, this could be avoided, but there is no such possibility on Galaksija).
 
 # License
 
