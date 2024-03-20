@@ -343,10 +343,10 @@ EditMemCmd:
   ; Convert ASCII to HEX for third parameter and write that at the beginning of input buffer
   pop hl                    ; HL = first parameter
 .StoreHex
+  call CheckLatch
   call HexToNumCR
   jp z, ShowOKMsg
   jr c, ShowHowMsg
-  call CheckLatch
   ld (hl), a
   inc hl
   jr .StoreHex
