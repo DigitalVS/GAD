@@ -4,6 +4,8 @@ GAD is a debugging application for retro computer [Galaksija](https://en.wikiped
 
 Minimum system requirements are Galaksija with built-in ROM A and ROM B (sometimes referred also as ROM 1 and ROM 2) and some RAM memory expansion. Classical 6 KB RAM Galaksija is technically capable of loading GAD but doesn't have any memory left for debugged program.
 
+Program start address is the first byte of the program, thus, the same address as in the assembler ORG directive.
+
 # Features
 - Up to four software breakpoints set to any assembly instruction
 - Single stepping
@@ -33,11 +35,11 @@ Program counter (PC) always points to first disassembled line marked by `>` char
 
 _Memory dump window_ shows hexadecimal memory view with eight bytes in a row. For changing dump address use `M` command and for scrolling use up (`↑`) and down (`↓`) arrows.
 
-_Command line_ is used to submit commands with parameters. It's hidden while key shortcut command mode is active. Switching to command line input mode can be done by pressing `I` key. Exiting the command line input mode is done by executing `X` command (type X and press ENTER).
+_Command line_ is used to submit commands with parameters. It's hidden while key shortcut command mode is active. Switching to command line input mode can be done by pressing `I` key (`I` stands for Input). Exiting the command line input mode is done by executing `X` command (type X and press ENTER).
 
-Bottom screen line is _Messages area_. This is the line where some commands display their output information and where error messages are displayed.
+Bottom screen line is _Messages area_. This is the line where commands display status information and error messages.
 
-## Program messages
+## Program Messages
 
 GAD has few commonly used messages which have the same meaning where ever they may be issued. Those are:
 - `WHAT?` message is displayed when number of command parameters is wrong.
@@ -134,7 +136,7 @@ Search forward command is integral part of the `S` command previously issued fro
 
 <h3 id="breakpoint-set">B -	Breakpoint set/remove/show</h3>
 
-This command has multiple functions. It sets a new breakpoint, removes an existing breakpoint (only one at a time) or shows all set breakpoint addresses. Up to four breakpoints can be set simultaneously. Upon a successful completion, all command variations print breakpoint all addresses in the status line.
+This command has multiple functions. It sets a new breakpoint, removes an existing breakpoint (only one at a time) or shows all set breakpoint addresses. Up to four breakpoints can be set simultaneously. Upon a successful completion, all command variations print all breakpoint addresses in the status line.
 
 Setting a breakpoint has following format:
 
@@ -157,7 +159,6 @@ B 2 &3200
 1:---- 2:3200 3:---- 4:----
 ```
 Next example shows how to check which breakpoints are set and their values. After issuing `B` command without any parameters, GAD will print all breakpoint values in the status line. Note that if breakpoint is not set, its value is displayed with dashes (`----`).
-
 ```
 B
 1:2F00 2:3200 3:---- 4:----
