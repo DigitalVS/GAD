@@ -1,6 +1,6 @@
 # GAD - Galaksija Debugger
 
-GAD is a debugging application for retro computer [Galaksija](https://en.wikipedia.org/wiki/Galaksija_(computer)) written in Z80 assembly language. It is aimed to help with developing other assembly language programs.
+GAD is a debugging application for retro computer [Galaksija](https://en.wikipedia.org/wiki/Galaksija_(computer)) (Galaxy) written in Z80 assembly language. It is aimed to help with developing other assembly language programs.
 
 Minimum system requirements are Galaksija with built-in ROM A and ROM B (sometimes referred also as ROM 1 and ROM 2) and some RAM memory expansion. Classical 6 KB RAM Galaksija is technically capable of loading GAD but doesn't have any memory left for debugged program.
 
@@ -300,24 +300,21 @@ Searched string length is limited only by size of input buffer. Currently, maxim
 
 Co-executing two programs on a platform without memory protection certainly imposes some rules of good behavior for both of these programs. But there are some not so obvious limitations which will be listed here as well.
 
+### Breakpoint implementation
+
 GAD's breakpoint is implemented as simple three bytes `CALL` instruction into a breakpoint handling routine. When inserted into the target code, this CALL instruction may overlap from one (three byte long) to three (one byte long) other instructions. Depending on an order of execution, in same rare occasions, when execution misses the breakpoint but jumps to second or third byte overlapped by `CALL` instruction, this may lead to unpredictable behavior (if there would exist one user defined `RST` vector, this could be avoided, but there is no such possibility on Galaksija).
+
+### Breakpoints in a loop
+
+When execution first time reaches a breakpoint set to instruction which is somewhere in some form of a loop, it will regularly stop and switch to the debugging screen. Then if user continue execution from this point (e.g. by pressing `;` key) hopping that execution will stop again at the same instruction in the next loop iteration, this will not happen and execution will continue further as that this breakpoint do not exists anymore.
+
+This is the case because GAD cannot stop at the breakpoint set at current address, cause otherwise it will go straight to the breakpoint handling routine instead of continuing to next loop iteration.
+
+Workaround for this limitation is to first single step one instruction by pressing `ENTER` key and then continue execution with `;` key.
 
 # License
 
 The MIT License (MIT)
 
-Copyright (c) 2024 Vitomir Spasojević <vitomir.spasojevic@gmail.com> (https://github.com/DigitalVS/GAD). All rights reserved.
-
-
-
-
-
-
-
-
-
-
-
-
-
+Copyright (c) 2024 Vitomir Spasojević (https://github.com/DigitalVS/GAD). All rights reserved.
 
