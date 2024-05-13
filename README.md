@@ -306,7 +306,7 @@ GAD's breakpoint is implemented as simple three bytes `CALL` instruction into a 
 
 ### Breakpoints in a loop
 
-When execution first time reaches a breakpoint set to instruction which is somewhere in some form of a loop, it will regularly stop and switch to the debugging screen. Then if user continue execution from this point (e.g. by pressing `;` key) hopping that execution will stop again at the same instruction in the next loop iteration, this will not happen and execution will continue further as that this breakpoint do not exists anymore.
+When execution first time reaches a breakpoint set to instruction which is somewhere in some form of a loop, it will regularly stop and switch to the debugging screen. Then if user continue execution from this point (e.g. by pressing `;` key) hoping that execution will stop again at the same instruction in the next loop iteration, this will not happen and execution will continue further as that this breakpoint do not exists anymore.
 
 This is the case because GAD cannot stop at the breakpoint set at current address, cause otherwise it will go straight to the breakpoint handling routine instead of continuing to next loop iteration.
 
