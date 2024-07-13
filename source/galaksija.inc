@@ -90,7 +90,7 @@ TapeLoadByte    = $0EDD ; Load byte from tape into C register.
 ScrollWait      = $0A3D ; Wait for scroll to finish. Parameter in HL contains SCROLLFLAG (or SCROLLCNT) address.
 RndFunc         = $0C8F ; RND function. Pushes random floating point number on the arithmetic stack.
 ; ROM B
-PrintHex16      = $1357 ; Print HL register content as HEX value.
+PrintHex16      = $1357 ; Print HL register content as HEX value (ASMOPTFLAG and ASMPASSNO have to have value 1).
 PrintAHex8      = $135C ; Print A register content as HEX value.
 ReadHexByte     = $18EE ; Read HEX byte from input stream pointed by DE.
 

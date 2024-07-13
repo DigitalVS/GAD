@@ -2,9 +2,9 @@
 
 GAD is a debugging application for retro computer [Galaksija](https://en.wikipedia.org/wiki/Galaksija_(computer)) (Galaxy) written in Z80 assembly language. It is aimed to help with developing other assembly language programs.
 
-Minimum system requirements are Galaksija with built-in ROM A and ROM B (sometimes referred also as ROM 1 and ROM 2) and some RAM memory expansion. Classical 6 KB RAM Galaksija is technically capable of loading GAD but doesn't have any memory left for debugged program.
+Minimum system requirements are Galaksija with built-in ROM A and ROM B (sometimes referred also as ROM 1 and ROM 2) and some form of RAM memory expansion. Classical 6 KB RAM Galaksija is technically capable of loading GAD but doesn't have any memory left for debugged program.
 
-Program start address is the first byte of the program, thus, the same address as in the assembler ORG directive.
+Program start address is the first byte of the program, thus, the same address as in the assembler ORG directive. Assembly code contains few non standard structure definitions which are written in compliance to SjASMPlus assembler syntax rules. In case of using other assembler utilities, these definitions have to be adapted to meet syntax rules of a chosen assembler tool.
 
 # Features
 - Up to four software breakpoints set to any assembly instruction

@@ -9,7 +9,7 @@
 INBUFFERSIZE  = 30          ; Input buffer size
 NUMBRKS       = 4           ; Breakpoints number
 START_ADDR    = $2C3A       ; Initial dump and disassembler start address is set at the start of free memory
-VERSION       = 1
+VERSION       = 2
 
   STRUCT brk
 status          BYTE        ; 1 = active, 0 = inactive
@@ -88,6 +88,10 @@ Start:
   ld (hl), e                ; ld (hl), de
   inc hl
   ld (hl), d
+  ; Next two flags have to have value 1 because otherwise PrintHex16 call won't display anything!
+  ld a, $01
+  ld (ASMOPTFLAG), a
+  ld (ASMPASSNO), a
 UpdateScreen:
   ld a, FF                  ; Form feed character
   rst $20                   ; Clears screen
