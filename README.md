@@ -2,7 +2,7 @@
 
 GAD is a debugging application for retro computer [Galaksija](https://en.wikipedia.org/wiki/Galaksija_(computer)) (Galaxy) written in Z80 assembly language. It is aimed to help with developing other assembly language programs.
 
-Minimum system requirements are Galaksija with built-in ROM A and ROM B (sometimes referred also as ROM 1 and ROM 2) and some form of RAM memory expansion. Classical 6 KB RAM Galaksija is technically capable of loading GAD but doesn't have any memory left for debugged program.
+Minimum system requirements are Galaksija with built-in ROM A and ROM B (sometimes referred also as ROM 1 and ROM 2) and some form of RAM memory expansion or newer Galaksija version from year 2024. Classical 6 KB RAM Galaksija is technically capable of loading GAD but doesn't have any memory left for debugged program.
 
 Program start address is the first byte of the program, thus, the same address as in the assembler ORG directive. Assembly code contains few non standard structure definitions which are written in compliance to SjASMPlus assembler syntax rules. In case of using other assembler utilities, these definitions have to be adapted to meet syntax rules of a chosen assembler tool.
 
@@ -25,11 +25,11 @@ Next image depicts typical GAD screen appearance. GAD's screen is divided into s
 
 ![GAD screen sections.](/images/dbg-sections.png)
 
-First row of a _Registers view_ shows main register set values, as well as values of IX and SP registers. Second row shows alternate register set values, IY and two bytes from memory location pointed by SP register, respectively.
+Upper row of a _Registers view_ shows main register set values, as well as values of IX and SP registers. Down row shows alternate register set values, IY and two bytes from memory location pointed by SP register, respectively.
 
 _Individual flags view_ is an another representation for a F register value. Every flag from the F register is displayed as a dash character (-) if reset and as a letter if set, beginning from the lowest bit on right to highest bit on the left side. For example, `SZ H VNC` is displayed when all bits are set.
 
-_Disassembler window_ shows memory contents in assembly code form. The contents of a window can be changed with `D` command and some sort of scrolling can be achieved with skip key shortcut `/` for forward scrolling and `B` for backward scrolling (one byte at the time).
+_Disassembler window_ shows memory contents in assembly code form. The contents of a window can be changed with `D` command and some sort of scrolling can be achieved with skip key shortcut `/` for forward scrolling and `B` for backward scrolling. Note that backward scrolling is only one byte at the time. Thus, disassembled code may not be correct after each step!
 
 Program counter (PC) always points to first disassembled line marked by `>` character placed in front of instruction mnemonic. PC value can be set with `D from` or `R PC value` commands, or implicitly with `G addr` command.
 
@@ -130,7 +130,7 @@ This command will continue execution from the current PC value until it reaches 
 
 <h3 id="search-forward">F - Search forward</h3>
 
-Search forward command is integral part of the `S` command previously issued from the command line. As its name says, it searches forward the next occurrence of the searched string from the address where it has been previously found.
+Search forward command is integral part of the `S` command previously issued from the command line. As its name says, it searches forward the next occurrence of the searched byte string from the address where it has been previously found.
 
 ## Command Line Commands
 
@@ -164,7 +164,7 @@ B
 1:2F00 2:3200 3:---- 4:----
 ```
 
-> Addresses below `&2C00` are not allowed for breakpoints (ROM, video RAM and system variables space). If user try to set a breakpoint in that range, message `SORRY` will be displayed.
+> Addresses below `&2C00` are not allowed for breakpoints (ROM, memory mapped keyboard, video RAM, part of system variables space). If user try to set a breakpoint in that range, message `SORRY` will be displayed.
 
 <h3 id="copy-memory">C - Copy memory</h3>
 
@@ -173,7 +173,7 @@ Copy section of memory from one memory area to another.
 ```
 C <start address> <end address> <target address>
 ```
-where _start address_ is start address of data to be copied, _end address_ is end address of data to be copied, and target is start address of new location where data will be copied.
+where _start address_ is start address of data to be copied, _end address_ is end address of data to be copied, and _target address_ is start address of new location where data will be copied.
 
 If _target address_ is between _start address_ and _end address_ command will copy memory backwards.
 
@@ -263,7 +263,7 @@ This command sets any register (8-bit) or register-pair (16-bit) value, except `
 ```
 R <register> <value>
 ```
-where _register_ is register name (eg. `A` or `BC`), and value is new one or two byte register value. After the execution, register view will immediately update specified register value.
+where _register_ is register name (eg. `A` or `BC`), and _value_ is new one or two byte register value. After the execution, register view will immediately update specified register value.
 
 > Due to limitations imposed by Galaksija's architecture for use of IY and (to some lesser extent) IX registers from user code, value of IY and IX registers cannot be changed by `R` command! Changes issued to IY and IX registers will be shown in _register view_ but values will not be transferred to registers itself.
 
@@ -310,7 +310,7 @@ When execution first time reaches a breakpoint set to instruction which is somew
 
 This is the case because GAD cannot stop at the breakpoint set at current address, cause otherwise it will go straight to the breakpoint handling routine instead of continuing to next loop iteration.
 
-Workaround for this limitation is to first single step one instruction by pressing `ENTER` key and then continue execution with `;` key.
+Workaround for this limitation is to first single step one instruction by pressing `ENTER` key (or more then one if that instruction length is less then three bytes) and then continue execution with `;` key.
 
 # License
 
