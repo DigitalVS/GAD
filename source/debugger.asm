@@ -74,7 +74,7 @@ DUMP_CURSOR_POS = VIDEORAM + $140
 INPUT_CURSOR_POS = VIDEORAM + $1C0
 MSG_LINE_CPOS = VIDEORAM + $1E0
 
-  .org $F000 ;.org $4800
+  .org $4800
 
 Start:
   ld (SP_SYS), sp           ; Save system stack pointer
@@ -958,8 +958,7 @@ TraceCont:                  ; Continue tracing
   pop bc
   pop de                    ; Load base registers
   pop hl
-  pop ix
-  ; Don't restore IY, just update SP
+  ; Don't restore IX and IY, just update SP
   ld sp, (SP_REG)           ; SP = SP_REG
   push hl                   ; Push HL_REG onto stack to be restored by EX
   ld hl, (PC_REG)           ; HL = PC_REG
@@ -2448,8 +2447,7 @@ DDFD_CB_TABLE: ; DD CB fo IX, FD CB for IY
   BYTE $FE, $2A, CODE_VALUE_7, CODE_IX_D2 ; SET 7,(IX+d)
   BYTE $00
 
-;vars: ; Variables are located at the end of program
-vars = $BC00 ; Last kilobyte of a memory expansion
+vars: ; Variables are located at the end of program
 ;vars = $6000 ; Variables are located at fixed starting address set by this line
 PREFIX       = vars + v._PREFIX
 TABEL1_INDEX = vars + v._TABEL1_INDEX
