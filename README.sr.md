@@ -6,7 +6,8 @@ Minimalna konfiguracija za izvršavanje programa je Galaksija sa ugrađenim ROM 
 
 Startna adresa je prvi bajt programa, dakle, ista ona adresa koja je navedena u ORG direktivi. Asemblerski kod sadrži nekoliko nestandardnih definicija struktura koje su napisane prema sintaksnim pravilima SjASMPlus asemblera. U slučaju upotrebe drugog asemblerskog programa, ove definicije se moraju prilagoditi sintaksnim pravilima korišćenog razvojnog alata.
 
-# Osobine programa
+## Osobine programa
+
 - Do četiri softverske prekidne tačke (breakpoint) postavljene na bilo koju asemblersku instrukciju
 - Mogućnost izvršavanja instrukciju po instrukciju
 - Ulazak u potprogram (step into) ili zaustavljanje po izvršenom potprogramu (step over)
@@ -19,7 +20,9 @@ Startna adresa je prvi bajt programa, dakle, ista ona adresa koja je navedena u 
 - Prilično detaljno obaveštavanje o greškama nastalim tokom izvršavanja komandi programa
 - Umereno korišćenje memorije (oko 4,5 kilobajta)
 
-# Opis
+Izvršavanje instrukciju po instrukciju i prekidne tačke se mogu upotrebljavati samo za debagiranje programa u radnoj memoriji (RAM), dok sve ostale funkcionalnosti rade bilo sa RAM ili ROM memorijom.
+
+## Opis
 
 Sledeća slika prikazuje tipičan sadržaj ekrana GAD programa. GAD-ov ekran je izdeljen na šest fiksnih područja.
 
@@ -39,9 +42,10 @@ Komandna linija (_Command line_) se koristi za unos komandi sa parametrima. Ona 
 
 Poslednja linija na dnu ekrana je prostor za poruke programa (_Messages area_). Ovo je linija u kojoj program ispisuje statusne informacije i poruke o greškama.
 
-## Poruke programa
+### Poruke programa
 
 GAD koristi nekoliko opštih poruka o greškama koje uvek imaju isto značenje, gde god da se pojave. Ove poruke su:
+
 - `WHAT?` poruka se ispisuje ako je unet pogrešan broj parametara komande.
 - `HOW?` poruka se ispisuje ako neki od parametara ima pogrešnu vrednost.
 - `SORRY` poruka se ispisuje ako komanda, zbog nekog razloga, ne može biti izvršena. Razlog zavisi od tipa izdate komande, ali najćešće je to ukoliko se zahteva izvršenje komande nad nedozvoljenim delom memorijskog prostora (na primer, adrese od &2000 do &27FF).
@@ -49,13 +53,13 @@ GAD koristi nekoliko opštih poruka o greškama koje uvek imaju isto značenje, 
 
 Postoje i druge poruke programa koje su specifične za određene komande i one će biti predstavljene u okviru uputstva za te komande.
 
-# Komande programa
+## Komande programa
 
-## Komande izdate korišćenjem prečice na tastaturi
+### Komande izdate korišćenjem prečice na tastaturi
 
 >  Korisno je napomenuti da prilikom rada u emulatoru prečice na tastaturi odgovaraju Galaksijinom rasporedu tastera, a ne PC-jevom.
 
-### Osnovne prečice na tastaturi
+#### Osnovne prečice na tastaturi
 
 | Taster | Opis
 |------|---------------
@@ -69,7 +73,7 @@ Postoje i druge poruke programa koje su specifične za određene komande i one �
 | `F`  | [Traži unapred](#search-forward)
 | `X`  | Izlazak iz programa
 
-### Komande za menjane vrednosti statusnih flegova
+#### Komande za menjane vrednosti statusnih flegova
 
 | Taster | Opis
 |------|---------------
@@ -80,14 +84,14 @@ Postoje i druge poruke programa koje su specifične za određene komande i one �
 | `Z` | Invertuje Zero fleg
 | `S` | Invertuje Sign fleg
 
-### Komande za navigaciju u prozoru za prikaz sadržaja memorije
+#### Komande za navigaciju u prozoru za prikaz sadržaja memorije
 
 | Taster | Opis
 |------|---------------
 | `↑` | Skroluje prikaz memorije naviše
 | `↓` | Skroluje prikaz memorije naniže
 
-## Komande koje se izdaju preko komandne linije
+### Komande koje se izdaju preko komandne linije
 
 Većina parametara komandi predstavlja memorijske adrese defisane kao heksadecimalne ili decimalne cifre dužine do najviše četiri cifre. Heksadecimalni brojevi moraju imati paran broj cifara i moraju kao prefiks sadržati znak `&`. Decimalni brojevi takođe mogu biti dužine do najviše četiri cifre, što znači da je najveći dozvoljeni decimalni broj 9999. Izuzetak od prethodnog pravila je _hex_string_ parametar, koji je definisan kao paran broj heksadecimalnih cifara, sa opcionim prefiksom `&` (na primer: &114AB7)
 
@@ -106,11 +110,11 @@ Većina parametara komandi predstavlja memorijske adrese defisane kao heksadecim
 | `V` | | Ispisuje verziju programa
 | `X` | | Izlazak iz komandne linije
 
-# Uputstva za komande programa
+## Uputstva za komande programa
 
-## Komande izdate korišćenjem prečice na tastaturi
+### Komande izdate korišćenjem prečice na tastaturi
 
-<h3 id="enter-step-over">ENTER -	Izvršavanje tekuće instrukcije (step over režim)</h3>
+<h3 id="enter-step-over">ENTER - Izvršavanje tekuće instrukcije (step over režim)</h3>
 
 Pritisak na taster `ENTER` će izvršiti istrukciju na koju pokazuje programski brojač (PC registar). U slučaju da je sledeća instrukcija poziv potprograma, kompletan potprogram će biti izvršen i nova vrednost programskog brojača će pokazivati na sledeću instrukciju posle ovog poziva.
 
@@ -122,7 +126,7 @@ Vrednost registra PC može biti postavljena bilo kada komandama `D from` ili `R 
 
 Ukoliko vrednost programskog brojača pokazuje na instrukciju `CALL`, tj. ukoliko je to poziv potprograma, ova komanda će ući u potprogram i zaustaviti se na prvoj instrukciji tog potprograma. Za sve ostale instrukcije, ova komanda se ponaša jednako kao i komanda za izvršavanje tekuće instrukcije (taster `ENTER`).
 
-<h3 id="continue-execution">; - 	Nastavak izvršavanja do prekidne tačke</h3>
+<h3 id="continue-execution">; - Nastavak izvršavanja do prekidne tačke</h3>
 
 Ova komanda će nastaviti izvršavanje od tekuće vrednosti registra PC, sve dok ne dostigne sledeću prekidnu tačku ili dođe do kraja programa.
 
@@ -132,9 +136,9 @@ Ova komanda će nastaviti izvršavanje od tekuće vrednosti registra PC, sve dok
 
 Komanda za traženje unapred se koristi u paru sa komandom `S` koja je prethodno pozvana iz komandne linije. Kao što njeno ime kaže, ova komanda traži sledeće pojavljivanje traženog niza bajtova napred od adrese na kojoj je prethodno pronađen.
 
-## Komande koje se izdaju preko komandne linije
+### Komande koje se izdaju preko komandne linije
 
-<h3 id="breakpoint-set">B -	Postavljanje/uklanjanje/prikazivanje prekidne tačke</h3>
+<h3 id="breakpoint-set">B - Postavljanje/uklanjanje/prikazivanje prekidne tačke</h3>
 
 Ova komanda ima više funkcija. Njom se postavlja nova ili uklanja postojeća prekidna tačka (samo po jedna u jednoj komandi), ili se prikazuje vrednost svih prekidnih tačaka. Najviše četiri prekidne tačke mogu postojati istovremeno. Po uspešnom završetku, sve varijacije ove komande, u statusnoj liniji ispisuju vrednosti svih postavjenih prekidnih tačaka.
 
@@ -296,7 +300,7 @@ Dužina traženog niza je ograničena samo veličinom ulaznog bafera. Trenutno j
 
 > Između uzastopnih pretraživanja `S` i `F` komandama, traženi string se čuva u ulaznom baferu komandne linije. To znači, da će uzastopna pretraživanja pravilno funkcionisati samo ukoliko se u međuvremenu iz komandne linije ne startuju nove komande, zato što bi njihov sadržaj uništio sadržaj traženog stringa koji se nalazi u ulaznom baferu.
 
-# Ograničenja
+## Ograničenja
 
 Naizmenično izvršavanje dva programa na platformi koja nema mogućnost zaštite pristupa memoriji svakako nameće neka pravila dobrog ponašanja za oba ova programa. Ipak, postoje i neka, ne tako očigledna ograničenja, i ona će biti ovde navedena.
 
@@ -312,9 +316,8 @@ Razlog za ovakvo ponašanje je da izvršavanje ne može da se zaustavi na prekid
 
 Rešenje za ovakvu situaciju je da se prvo izvrši jedna instrukcija (ili više njih ako je ta instrukcija kraća od tri bajta) pritiskom na taster `ENTER`, pa da se tek onda nastavi izvršavanje pritiskom na taster `;`.
 
-# Licenca
+## Licenca
 
 The MIT License (MIT)
 
 Copyright (c) 2024 Vitomir Spasojević (https://github.com/DigitalVS/GAD). Sva prava zadržana.
-

@@ -74,7 +74,7 @@ DUMP_CURSOR_POS = VIDEORAM + $140
 INPUT_CURSOR_POS = VIDEORAM + $1C0
 MSG_LINE_CPOS = VIDEORAM + $1E0
 
-  .org $4800
+  .org $F000 ;.org $4800
 
 Start:
   ld (SP_SYS), sp           ; Save system stack pointer
@@ -149,14 +149,14 @@ KeyLoop:
   ld de, 8                  ; 8 bytes are in one row
   add hl, de
   jr .Dump
-.CheckDown
+.CheckDown:
   cp KEY_UP
   jr nz, KeyLoop
   ld hl, (DUMP_ADDR)
   ld de, 8
   or a                      ; Next two instructions: sub hl, de
   sbc hl, de
-.Dump
+.Dump:
   ld (DUMP_ADDR), hl
   call MemoryDump
   jr KeyLoop
@@ -173,46 +173,46 @@ ToggleFlags:
 ; Adopted subroutine from ROM A at address $7BB to allow input in one line only into its own buffer
 ;
 GetInputLine:
-	ld a, '>'
-	ld de, IN_BUFFER          ; Load INPUT_BUFFER address into DE
-	rst $20		                ;	Display prompt '>'.
+  ld a, '>'
+  ld de, IN_BUFFER          ; Load INPUT_BUFFER address into DE
+  rst $20		                ;	Display prompt '>'.
 .LoopCurs:
   push hl
   ld hl, (CURSORPOS)
-	ld (hl), '_'
+  ld (hl), '_'
   pop hl
 .Loop:
-	call ReadKey	            ;	Read a key and print it
-	rst $20
+  call ReadKey	            ;	Read a key and print it
+  rst $20
   push hl
   ld hl, (CURSORPOS)
-	ld (hl), '_'	            ;	Print cursor
+  ld (hl), '_'	            ;	Print cursor
   pop hl
-	cp CR
-	jr z, .Add                ;	ENTER pressed, jump to ADD
-	cp KEY_LEFT
-	jr z, .Backspace      	  ;	Left arrow pressed, jump to BACKSPACE
-	cp $0C
-	jr z, GetInputLine        ;	SHIFT-DELETE pressed - begin from the start
-	cp $20
-	jr c, .Loop	              ;	Ignore if key code is less than $20
+  cp CR
+  jr z, .Add                ;	ENTER pressed, jump to ADD
+  cp KEY_LEFT
+  jr z, .Backspace      	  ;	Left arrow pressed, jump to BACKSPACE
+  cp $0C
+  jr z, GetInputLine        ;	SHIFT-DELETE pressed - begin from the start
+  cp $20
+  jr c, .Loop	              ;	Ignore if key code is less than $20
 .Add:
-	ld (de), a	              ;	Load ASCII code of the pressed key into the buffer
-	inc de
-	cp CR 		                ;	If ENTER was pressed, return.
-	ret z
-	ld a, e		                ;	Compare lower byte of DE with end of buffer
+  ld (de), a	              ;	Load ASCII code of the pressed key into the buffer
+  inc de
+  cp CR 		                ;	If ENTER was pressed, return.
+  ret z
+  ld a, e		                ;	Compare lower byte of DE with end of buffer
   ; TODO Implement longer line input, with horizontal scrolling.
-	cp (IN_BUFFER + INBUFFERSIZE) & $FF ; Input buffer start address plus its size. This is allowed command input length.
-	jr nz, .Loop	            ;	If end of buffer not reached,	then loop...
-	ld a, KEY_LEFT            ;	...else delete last pressed character from the screen and buffer
-	rst $20
+  cp (IN_BUFFER + INBUFFERSIZE) & $FF ; Input buffer start address plus its size. This is allowed command input length.
+  jr nz, .Loop	            ;	If end of buffer not reached,	then loop...
+  ld a, KEY_LEFT            ;	...else delete last pressed character from the screen and buffer
+  rst $20
 .Backspace:
-	ld a, e
-	cp IN_BUFFER & $FF        ;	Compare lower byte of DE with buffer start address
-	jr z, GetInputLine        ;	If not at start of buffer decrement DE
-	dec de
-	jr .LoopCurs
+  ld a, e
+  cp IN_BUFFER & $FF        ;	Compare lower byte of DE with buffer start address
+  jr z, GetInputLine        ;	If not at start of buffer decrement DE
+  dec de
+  jr .LoopCurs
 
 GetInputCmd:
   ld de, INPUT_CURSOR_POS
@@ -236,7 +236,7 @@ GetInputCmd:
   jr z, .OneChrCmd
   cp CR
   jr nz, ShowWhatMsg        ; If second character is not SPACE nor CR
-.OneChrCmd
+.OneChrCmd:
   ld a, b
   ld c, (hl)                ; Command has been found!
   inc hl
@@ -346,7 +346,7 @@ EditMemCmd:
   jr z, ShowWhatMsg         ; Missing third command parameter
   ; Convert ASCII to HEX for third parameter and write that at the beginning of input buffer
   pop hl                    ; HL = first parameter
-.StoreHex
+.StoreHex:
   call CheckLatch
   call HexToNumCR
   jp z, ShowOKMsg
@@ -433,7 +433,7 @@ PrintMem:                   ; Print memory dump starting from address in HL
   ld a, ':'
   rst $20
   ld b, 8                   ; Print 8 bytes in one row
-.Row
+.Row:
   ld a, ' '
   rst $20
   call Peek
@@ -534,7 +534,7 @@ SearchMemCmd:
   jr nz, .Loop              ; Jump if not found
   inc bc
   jr .NextByte
-.Found
+.Found:
   ld (SEARCH_START), hl
   push hl                   ; HL = end of found string address
   ld h, b
@@ -556,7 +556,7 @@ ShowEndMsg:
   jr ShowMsg
 ShowOKMsg:
   ld bc, OKMsg
-ShowMsg
+ShowMsg:
   call PrintMsg
   jp KeyLoop
 
@@ -654,7 +654,7 @@ PrintReg:                   ; Prints HL register hex value
 CodeScroll:                 ; Scroll section of five rows by one row up
   ld b, 5
   ld de, DISASM_CURSOR_POS1 ; Start destination address
-.Row
+.Row:
   push bc
   ld bc, 32                 ; Size (row width)
   ld h, b
@@ -739,12 +739,12 @@ GetParameter:
   ; Hex number
   call HexToNum16
   jr .Converted
-.Integer
+.Integer:
   call Dec2Num16            ; HL = converted number
   ld a, b
   cp 5
   jr nc, .Error             ; For 5+ digits number
-.Converted
+.Converted:
   ld a, (de)
   cp ' '                    ; If number ends with SPACE, CR or ',' it's fine
   jr z, .Ok
@@ -752,12 +752,12 @@ GetParameter:
   jr z, .Ok
   cp ','
   jr z, .Ok
-.Error
+.Error:
   xor a
   inc a                     ; Clear zero flag
   scf
   ret                       ; Error (Cf = 1)
-.Ok
+.Ok:
   ex (sp), hl               ; Put parameter to stack, HL = return address
   xor a
   inc a                     ; Clear zero flag
@@ -793,7 +793,7 @@ Dec2Num16:
 
 ParamLength:                ; Find string parameter length. Parameter is pointed by DE, length is in C.
   ld c, 0
-.Next
+.Next:
   ld a, (de)                ; A = next parameter character
   cp ' '                    ; Parameter ends with space, comma or CR.
   ret z
@@ -897,7 +897,7 @@ TraceCode:
 ; input: HL = PC_REG contents
 ;
 GoCmd:                      ; HL = execution start address
-	dec	a
+  dec	a
   jp nz, ShowWhatMsg        ; If not one parameter
   jr GoFromHL
 
@@ -958,7 +958,8 @@ TraceCont:                  ; Continue tracing
   pop bc
   pop de                    ; Load base registers
   pop hl
-  ; Don't restore IX and IY, just update SP
+  pop ix
+  ; Don't restore IY, just update SP
   ld sp, (SP_REG)           ; SP = SP_REG
   push hl                   ; Push HL_REG onto stack to be restored by EX
   ld hl, (PC_REG)           ; HL = PC_REG
@@ -1039,7 +1040,7 @@ Break:
 RegisterCmd:                ; DE points to next character after 'R' in input buffer
   call SkipSpaces           ; Skip SPACE characters, A points to first non blank character
   push de
-.Count
+.Count:
   call ParamLength
   ld a, c
   and a                     ; Shorter version of: cp 0
@@ -1049,7 +1050,7 @@ RegisterCmd:                ; DE points to next character after 'R' in input buf
   pop de                    ; DE = points back to first register name character
   ld hl, RegNames
   ld b, 0                   ; B = index in RegNames list
-.Find
+.Find:
   push bc
   push de
   push hl
@@ -1068,7 +1069,7 @@ RegisterCmd:                ; DE points to next character after 'R' in input buf
   cp b
   jp z, ShowHowMsg          ; Can't find register name
   jr .Find
-.RegFound
+.RegFound:
   ld a, b
   bit 1, c                  ; Register pair?
   jr z, .Reverse
@@ -1085,7 +1086,7 @@ RegisterCmd:                ; DE points to next character after 'R' in input buf
   pop bc
   push hl                   ; Save register address
   ld b, c                   ; B = register name length
-.Inc
+.Inc:
   inc de
   djnz .Inc                 ; DE = DE + C to skip first parameter
   push bc
@@ -1147,7 +1148,7 @@ BreakCmd:
   jr z, .Zero               ; Zero address is allowed for removing breakpoints
   cp $2C                    ; Check if address is less then $2C00, this area is not allowed for breakpoints
   jp c, ShowSorryMsg
-.Zero
+.Zero:
   xor a
   ld b, l                   ; Move breakpoint number from HL to B register
 .Mult:
@@ -2447,7 +2448,8 @@ DDFD_CB_TABLE: ; DD CB fo IX, FD CB for IY
   BYTE $FE, $2A, CODE_VALUE_7, CODE_IX_D2 ; SET 7,(IX+d)
   BYTE $00
 
-vars: ; Variables are located at the end of program
+;vars: ; Variables are located at the end of program
+vars = $BC00 ; Last kilobyte of a memory expansion
 ;vars = $6000 ; Variables are located at fixed starting address set by this line
 PREFIX       = vars + v._PREFIX
 TABEL1_INDEX = vars + v._TABEL1_INDEX

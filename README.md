@@ -6,7 +6,8 @@ Minimum system requirements are Galaksija with built-in ROM A and ROM B (sometim
 
 Program start address is the first byte of the program, thus, the same address as in the assembler ORG directive. Assembly code contains few non standard structure definitions which are written in compliance to SjASMPlus assembler syntax rules. In case of using other assembler utilities, these definitions have to be adapted to meet syntax rules of a chosen assembler tool.
 
-# Features
+## Features
+
 - Up to four software breakpoints set to any assembly instruction
 - Single stepping
 - Stepping into or over a subroutine
@@ -19,7 +20,9 @@ Program start address is the first byte of the program, thus, the same address a
 - Fairly good error handling for such a simple platform
 - Modest memory footprint (about 4.5 KBytes)
 
-# Description
+Single stepping and breakpoints work only while debugging a RAM resident program, the rest of the features work with program placed either in RAM or ROM.
+
+## Description
 
 Next image depicts typical GAD screen appearance. GAD's screen is divided into six sections located at fixed screen positions.
 
@@ -42,6 +45,7 @@ Bottom screen line is _Messages area_. This is the line where commands display s
 ## Program Messages
 
 GAD has few commonly used messages which have the same meaning where ever they may be issued. Those are:
+
 - `WHAT?` message is displayed when number of command parameters is wrong.
 - `HOW?` message is displayed when one of the parameters has wrong value.
 - `SORRY` message is displayed when command cannot be executed. Reason depends on the specific command but usually it is because chosen memory address value is in restricted area.
@@ -49,13 +53,13 @@ GAD has few commonly used messages which have the same meaning where ever they m
 
 There are other messages specific to certain commands which will be explained as part of command description.
 
-# Commands
+## Commands
 
-## Commands Issued by Keyboard Shortcut
+### Commands Issued by Keyboard Shortcut
 
 > If working in emulator, note that keyboard shortcut commands correspond to Galaksija's keyboard layout, not the PC's one.
 
-### Basic Keyboard Shortcuts
+#### Basic Keyboard Shortcuts
 
 | Key | Description
 |------|---------------
@@ -69,7 +73,7 @@ There are other messages specific to certain commands which will be explained as
 | `F`  | [Search forward](#search-forward)
 | `X`  | Exit to BASIC prompt
 
-### Flag Toggle Commands
+#### Flag Toggle Commands
 
 | Key | Description
 |------|---------------
@@ -80,14 +84,14 @@ There are other messages specific to certain commands which will be explained as
 | `Z` | Toggle Zero flag
 | `S` | Toggle Sign flag
 
-### Memory Dump Window Navigation
+#### Memory Dump Window Navigation
 
 | Key | Description
 |------|---------------
 | `↑` | Scroll memory dump window up
 | `↓` | Scroll memory dump window down
 
-## Command Line Commands
+### Command Line Commands
 
 Most of the command parameters represent memory address and are defined as up to four digit hexadecimal or decimal number. Hexadecimal numbers must have even number of digits and be prefixed by ampersand (&). Note that decimal numbers are also long only up to four digits, therefore maximum allowed decimal value is 9999. One exception to previous definition is _hex_string_ parameter which is defined as even number of hexadecimal digits optionally prefixed with `&` sign (eg. &114AB7).
 
@@ -106,11 +110,11 @@ Most of the command parameters represent memory address and are defined as up to
 | `V` | | Print program version
 | `X` | | Exit command line mode
 
-# Command Reference Manual
+## Command Reference Manual
 
-## Commands Issued by Keyboard Shortcut
+### Commands Issued by Keyboard Shortcut
 
-<h3 id="enter-step-over">ENTER -	Step over (single step)</h3>
+<h3 id="enter-step-over">ENTER - Step over (single step)</h3>
 
 Pressing the `ENTER` key will trigger the execution of the instruction pointed by program counter register. In case that current instruction is a subroutine call instruction, complete subroutine will be executed and new program counter value will be set to the next instruction after the call (hence the name `step over`).
 
@@ -132,9 +136,9 @@ This command will continue execution from the current PC value until it reaches 
 
 Search forward command is integral part of the `S` command previously issued from the command line. As its name says, it searches forward the next occurrence of the searched byte string from the address where it has been previously found.
 
-## Command Line Commands
+### Command Line Commands
 
-<h3 id="breakpoint-set">B -	Breakpoint set/remove/show</h3>
+<h3 id="breakpoint-set">B - Breakpoint set/remove/show</h3>
 
 This command has multiple functions. It sets a new breakpoint, removes an existing breakpoint (only one at a time) or shows all set breakpoint addresses. Up to four breakpoints can be set simultaneously. Upon a successful completion, all command variations print all breakpoint addresses in the status line.
 
@@ -296,7 +300,7 @@ Searched string length is limited only by size of input buffer. Currently, maxim
 
 > Between subsequent searches with `S` and `F` commands, searched string is kept in the command line input buffer. Thus, subsequent searches will work correctly only if no other command line commands are issued in meantime, because they would overwrite the input buffer contents.
 
-# Limitations
+## Limitations
 
 Co-executing two programs on a platform without memory protection certainly imposes some rules of good behavior for both of these programs. But there are some not so obvious limitations which will be listed here as well.
 
@@ -312,9 +316,8 @@ This is the case because GAD cannot stop at the breakpoint set at current addres
 
 Workaround for this limitation is to first single step one instruction by pressing `ENTER` key (or more then one if that instruction length is less then three bytes) and then continue execution with `;` key.
 
-# License
+## License
 
 The MIT License (MIT)
 
 Copyright (c) 2024 Vitomir Spasojević (https://github.com/DigitalVS/GAD). All rights reserved.
-

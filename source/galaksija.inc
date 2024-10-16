@@ -25,28 +25,29 @@ VIDEORAM  = $2800 ; Start of video RAM, 512 bytes, 32x16 characters
 ;----------------------------------------------------------------------------
 ; Name          Location  Size(B) Init value          Description
 NUMERICVARS     = $2A00 ;  104 	  0 	     Numeric BASIC variables from A to Z, two bytes each
-CURSORPOS       = $2A68 ;   2     $2800      Current cursor position in video RAM
+CURSORPOS       = $2A68 ;   2     $2800    Current cursor position in video RAM
 RAMTOP          = $2A6A ;   2     $3800 (for 4KB RAM) End of memory address
-SCREENSTART     = $2A6C ;   2     0          Start of video memory for scrolling.
+SCREENSTART     = $2A6C ;   2     0        Start of video memory for scrolling.
 STRINGX         = $2A70 ;  16 	  0 	     BASIC X$ variable value
 STRINGY         = $2A80 ;  16     0 	     BASIC Y$ variable value
-SHOWMEM         = $2A97 ;   2     0          Memory dump start address used by breakpoint command
-KBDDIFF         = $2AA5 ;   2     0          Keyboard differentiator
-RNDSEED         = $2AA7 ;   3     0          RND seed
-ASMPASSNO       = $2AAA ;   1                Assembler pass number (1 or 2)
+SHOWMEM         = $2A97 ;   2     0        Memory dump start address used by breakpoint command
+KBDDIFF         = $2AA5 ;   2     0        Keyboard differentiator (last two pressed keys)
+RNDSEED         = $2AA7 ;   3     0        RND seed
+ASMPASSNO       = $2AAA ;   1              Assembler pass number (1 or 2)
 ARITHMACC       = $2AAC ;  124*2  0 	     Arithmetics accumulators (IX), used for floating point calculations
-TEXTHORPOS      = $2BA8 ;   1   $B or $C     Horizontal text position
-BASICLINK       = $2BA9 ;   3     $C9        Basic command link. Initial value is RET opcode. Should be changed to JP $xxxx or CALL $xxxx.
-VIDEOLINK       = $2BAC ;   3     $C9        Video link
-SCROLLCNT       = $2BB0 ;   1     0          Scroll counter
-SCROLLFLAG      = $2BB1 ;   1     0	     Scroll flag
-SHOWFOR         = $2BB2 ;   1                Number of rows to dump. Zero value means dumping until BRK key is pressed. Every row is 8 bytes wide.
-ASMOPTFLAG      = $2BB3 ;   1                Assembler OPT flag value
-REPEATFLAG      = $2BB4 ;   1     0 	     REPT key register (last pressed key code)
-PRINTERFLAG     = $2BB5 ;   1     0          Value is $FF if printing is turn on, $00 otherwise.
-INPUTBUFFER     = $2BB6 ;  125               Input buffer start address
-BASICSTART      = $2C36 ;   2 	  $2C3A      BASIC start address
-BASICEND        = $2C38 ;   2     $2C3A      BASIC end address
+TEXTHORPOS      = $2BA8 ;   1   $B or $C   Horizontal text position
+BASICLINK       = $2BA9 ;   3     $C9      Basic command link. Initial value is RET opcode. Should be changed to JP $xxxx or CALL $xxxx.
+VIDEOLINK       = $2BAC ;   3     $C9      Video link
+CLOCKSTATE      = $2BAF ; 	1 		0 		   If bit 7 is set, clock's working
+SCROLLCNT       = $2BB0 ;   1     0        Scroll counter
+SCROLLFLAG      = $2BB1 ;   1     0	       Scroll flag
+SHOWFOR         = $2BB2 ;   1              Number of rows to dump. Zero value means dumping until BRK key is pressed. Every row is 8 bytes wide.
+ASMOPTFLAG      = $2BB3 ;   1              Assembler OPT flag value
+REPEATKEY       = $2BB4 ;   1     0 	     REPT key register (last pressed key code)
+PRINTERFLAG     = $2BB5 ;   1     0        Value is $FF if printing is turn on, $00 otherwise.
+INPUTBUFFER     = $2BB6 ;  125             Input buffer start address
+BASICSTART      = $2C36 ;   2 	  $2C3A    BASIC start address
+BASICEND        = $2C38 ;   2     $2C3A    BASIC end address
 
 ; Buffer and video RAM lengths
 INPUTBUFLEN     = BASICSTART - INPUTBUFFER - 3
@@ -56,7 +57,7 @@ VRAMLEN         = NUMERICVARS - VIDEORAM
 ;                          System Routines
 ;----------------------------------------------------------------------------
 ;
-; RST $08    EVALNUM   ASCII string pointed by DE convert to binary number and return result in HL
+; RST $08    EVALNUM   ASCII expression pointed by DE evaluated to integer number and return result in HL
 ; RST $10    CMPHLDE   Compare HL register with DE and sets C and Z flags
 ; RST $18,xx READPRM   Read parameter pointed by DE (from BASIC input stream). After the instruction is a character (eg. ',') and address to continue from if DE does not point to provided character.
 ; RST $20,xx PUTCHAR   Prints ASCII character in A to screen at position stored in CURSORPOS
@@ -81,7 +82,7 @@ GetCmdLine      = $07BB ; Gets command line with '>' at the beginning. Inputs st
 PrintString     = $0937 ; Prints string pointed by DE to screen at current cursor position. Destroyed registers are A, B, F. String must ends with $00 or $0D (CR).
 PrintChar       = $09B5 ; Prints character in A to screen at current cursor position in CURSORPOS. Character is considered special ASCII character (eg. FF) if C flag is set.
 ClearLine       = $0A34 ; Clear line on the screen from position pointed by HL to the end of the line. Destroys A and F registers.
-StringToInt     = $0CD3 ; Converts string to integer. DE is pointer to the string to be converted. Returns converted integer or 0 on error in HL. Zf set on error or clear on success.
+StringToInt     = $0CD3 ; Converts string to integer. DE is pointer to the string to be converted. Returns converted integer or 0 on error in HL. Zf set on error or cleared on success.
 ReadKey         = $0CF5 ; Wait for key to be pressed. Returns ASCII value in A register or key code for non-ASCII keys (arrows, etc.).
 TapeSaveWord    = $0E62 ; Save word from DE to tape.
 TapeSaveByte    = $0E68 ; Save byte from A to tape.
@@ -91,37 +92,37 @@ ScrollWait      = $0A3D ; Wait for scroll to finish. Parameter in HL contains SC
 RndFunc         = $0C8F ; RND function. Pushes random floating point number on the arithmetic stack.
 ; ROM B
 PrintHex16      = $1357 ; Print HL register content as HEX value (ASMOPTFLAG and ASMPASSNO have to have value 1).
-PrintAHex8      = $135C ; Print A register content as HEX value.
+PrintAHex8      = $135C ; Print A register content as HEX value (ASMOPTFLAG and ASMPASSNO have to have value 1).
 ReadHexByte     = $18EE ; Read HEX byte from input stream pointed by DE.
 
 ;-----------------------------------------------------------------------------
 ;                         RST  macros
 ;-----------------------------------------------------------------------------
-EVALNUM MACRO
-        rst $08    ; ASCII string pointed by DE convert to binary number and return result in HL
-        ENDM
+  MACRO EVALNUM
+    rst $08    ; ASCII string pointed by DE convert to binary number and return result in HL
+  ENDM
 
-CMPHLDE MACRO
-        rst $10    ; Compare HL to DE. Z if equal, set C flag if HL < DE. Destroys A register.
-        ENDM
+  MACRO CMPHLDE
+    rst $10    ; Compare HL to DE. Z if equal, set C flag if HL < DE. Destroys A register.
+  ENDM
 
 ; Reads 'char' after rst instruction and jumps to 'address' if it is not
 ; equal to first non-space character in the string pointed by DE register.
 ; Example: READPRM ',', Here-$-1
-READPRM MACRO char, address
-        rst $18
-        db char
-        db address
-        ENDM
+  MACRO READPRM char, address
+    rst $18
+    db char
+    db address
+  ENDM
 
-PUTCHAR MACRO char ; Example: PUTCHAR '?'
-        ld a, char
-        rst $20    ; Print char in A at position stored in CURSORPOS
-        ENDM
+  MACRO PUTCHAR char ; Example: PUTCHAR '?'
+    ld a, char
+    rst $20    ; Print char in A at position stored in CURSORPOS
+  ENDM
 
-CLEARHL MACRO
-        rst $28    ; Clear HL register
-        ENDM
+  MACRO CLEARHL
+    rst $28    ; Clear HL register
+  ENDM
 
 ;-----------------------------------------------------------------------------
 ;                         Key Codes
@@ -183,7 +184,7 @@ KEY_LIST = 52
 KEY_SHIFT = 53
 
 ;-----------------------------------------------------------------------------
-;                       Shift-key produced characters
+;                       Shift-key produced characters (original ROM A)
 ;-----------------------------------------------------------------------------
 ; Normal   Shift   Key code
 ;  ' '      ' '      $1f
