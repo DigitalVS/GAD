@@ -269,7 +269,7 @@ R <register> <value>
 ```
 where _register_ is register name (eg. `A` or `BC`), and _value_ is new one or two byte register value. After the execution, register view will immediately update specified register value.
 
-> Due to limitations imposed by Galaksija's architecture for use of IY and (to some lesser extent) IX registers from user code, value of IY and IX registers cannot be changed by `R` command! Changes issued to IY and IX registers will be shown in _register view_ but values will not be transferred to registers itself.
+> Due to limitations imposed by Galaksija's architecture for use of IY (and to some lesser extent IX) register from user code, value of register IY cannot be changed by `R` command! Changes issued to IY register will be shown in _register view_ but value will not be transferred to register itself.
 
 EXAMPLES:
 
@@ -320,4 +320,4 @@ Workaround for this limitation is to first single step one instruction by pressi
 
 The MIT License (MIT)
 
-Copyright (c) 2024 Vitomir Spasojević (https://github.com/DigitalVS/GAD). All rights reserved.
+Copyright (c) 2024 Vitomir Spasojević (<https://github.com/DigitalVS/GAD>). All rights reserved.

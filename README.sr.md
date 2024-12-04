@@ -231,7 +231,7 @@ F &4000 &47FF
 ```
 Ovaj primer ispunjava memorijske lokacije &4000 do &47FF nulama.
 
-<h3 id="go-execute">G - 	Startovanje izvršavanja do prekidne tačke</h3>
+<h3 id="go-execute">G - Startovanje izvršavanja do prekidne tačke</h3>
 
 Startuje izvršavanje od navedene adrese. Format komande je:
 
@@ -269,7 +269,7 @@ R <register> <value>
 ```
 gde je _register_ naziv registra (na primer `A` ili `BC`), a _value_  je nova vrednost registra dužine jedan ili dva bajta (kod promene vrednosti registarskog para). Po izvršenju, registarski pregled na gornjem delu ekrana će biti ažuriran tako da prikazuje novu vrednost registra.
 
-> Usled ograničenja koju nameće arhitektura Galaksije za korišćenje IY i (u nešto manjoj meri) IX registara od strane korisničkog programa, vrednosti IY i IX registara se trenutno ne mogu promeniti `R` komandom! Promene nad IY i IX registrima će biti prikazane u području ekrana rezervisanom za prikaz registara, ali promenjene vrednosti neće biti upisane i u same registre.
+> Usled ograničenja koje nameće arhitektura Galaksije za korišćenje IY (i u nešto manjoj meri IX) registra od strane korisničkog programa, vrednost registra IY se trenutno ne možu promeniti `R` komandom! Promene nad IY registrom će biti prikazane u području ekrana rezervisanom za prikaz registara, ali promenjena vrednost neće biti upisana i u sam registar.
 
 PRIMERI:
 
@@ -320,4 +320,4 @@ Rešenje za ovakvu situaciju je da se prvo izvrši jedna instrukcija (ili više 
 
 The MIT License (MIT)
 
-Copyright (c) 2024 Vitomir Spasojević (https://github.com/DigitalVS/GAD). Sva prava zadržana.
+Copyright (c) 2024 Vitomir Spasojević (<https://github.com/DigitalVS/GAD>). Sva prava zadržana.

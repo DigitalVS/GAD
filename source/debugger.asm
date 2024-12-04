@@ -9,7 +9,7 @@
 INBUFFERSIZE  = 30          ; Input buffer size
 NUMBRKS       = 4           ; Breakpoints number
 START_ADDR    = $2C3A       ; Initial dump and disassembler start address is set at the start of free memory
-VERSION       = 2
+VERSION       = 3
 
   STRUCT brk
 status          BYTE        ; 1 = active, 0 = inactive
@@ -612,8 +612,9 @@ ShowRegisters:
   call PrintReg
   ld hl, (HL_ALT)
   call PrintReg
-  ld hl, (SP_REG)
+  ld hl, (IY_REG)
   call PrintReg
+  ld hl, (SP_REG)
   ld e, (hl)                ; Print two bytes at stack top
   inc hl
   ld d, (hl)
@@ -958,7 +959,8 @@ TraceCont:                  ; Continue tracing
   pop bc
   pop de                    ; Load base registers
   pop hl
-  ; Don't restore IX and IY, just update SP
+  pop ix
+  ; Don't restore IY, just update SP
   ld sp, (SP_REG)           ; SP = SP_REG
   push hl                   ; Push HL_REG onto stack to be restored by EX
   ld hl, (PC_REG)           ; HL = PC_REG
