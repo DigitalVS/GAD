@@ -1,6 +1,6 @@
 # GAD - Galaksija Debugger
 
-GAD is a debugging application for retro computer [Galaksija](https://en.wikipedia.org/wiki/Galaksija_(computer)) (Galaxy) written in Z80 assembly language. It is aimed to help with developing other assembly language programs.
+GAD is a debugging application for retro computer [Galaksija](https://en.wikipedia.org/wiki/Galaksija_(computer)) (eng: Galaxy) written in Z80 assembly language. It is aimed to help with developing other assembly language programs.
 
 Minimum system requirements are Galaksija with built-in ROM A and ROM B (sometimes referred also as ROM 1 and ROM 2) and some form of RAM memory expansion or newer Galaksija version from year 2024. Classical 6 KB RAM Galaksija is technically capable of loading GAD but doesn't have any memory left for debugged program.
 
@@ -20,7 +20,7 @@ Program start address is the first byte of the program, thus, the same address a
 - Fairly good error handling for such a simple platform
 - Modest memory footprint (about 4.5 KBytes)
 
-Single stepping and breakpoints work only while debugging a RAM resident program, the rest of the features work with program placed either in RAM or ROM.
+Single stepping and breakpoints work only while debugging RAM resident program, the rest of the features work with program placed either in RAM or ROM.
 
 ## Description
 
@@ -34,7 +34,7 @@ _Individual flags view_ is an another representation for a F register value. Eve
 
 _Disassembler window_ shows memory contents in assembly code form. The contents of a window can be changed with `D` command and some sort of scrolling can be achieved with skip key shortcut `/` for forward scrolling and `B` for backward scrolling. Note that backward scrolling is only one byte at the time. Thus, disassembled code may not be correct after each step!
 
-Program counter (PC) always points to first disassembled line marked by `>` character placed in front of instruction mnemonic. PC value can be set with `D from` or `R PC value` commands, or implicitly with `G addr` command.
+Program counter (PC) always points to first disassembled line marked by `>` character placed in front of instruction mnemonic. PC value can be set with `D <from>` or `R PC <value>` commands, or implicitly with `G <addr>` command.
 
 _Memory dump window_ shows hexadecimal memory view with eight bytes in a row. For changing dump address use `M` command and for scrolling use up (`↑`) and down (`↓`) arrows.
 
@@ -118,9 +118,9 @@ Most of the command parameters represent memory address and are defined as up to
 
 Pressing the `ENTER` key will trigger the execution of the instruction pointed by program counter register. In case that current instruction is a subroutine call instruction, complete subroutine will be executed and new program counter value will be set to the next instruction after the call (hence the name `step over`).
 
-PC value can be set at any time before or between two single step commands with `D from` or `R PC value` commands.
+PC value can be set at any time before or between two single step commands with `D <from>` or `R PC <value>` commands.
 
-> After every instruction executed by single step command, screen blinks once. You may ask why is it necessary? Well, it is unavoidable cause for every executed instruction, GAD copies system screen to video memory, executes (or emulates if necessary) the instruction pointed by PC, copies back system screen from video memory to the buffer and regenerates its own screen contents.
+> After every instruction executed by single step command, screen briefly blinks once. You may ask why is it necessary? Well, it is unavoidable cause for every executed instruction, GAD copies system screen to video memory, executes (or emulates if necessary) the instruction pointed by PC, copies back system screen from video memory to the buffer and regenerates its own screen contents.
 
 <h3 id="step-into">. - Step into</h3>
 
@@ -130,7 +130,7 @@ If program counter value points to subroutine call instruction (`CALL`), this co
 
 This command will continue execution from the current PC value until it reaches a breakpoint or the end of the program.
 
-> If there are no breakpoints set, or non of the breakpoints has not been hit during the execution, and end of the debugged program is reached, then execution will jump out of GAD to the BASIC prompt. To avoid this behavior consider using proceed command (`P addr`) or use single stepping instead.
+> If there are no breakpoints set, or non of the breakpoints has not been hit during the execution, and end of the debugged program is reached, then execution will jump out of GAD to the BASIC prompt. To avoid this behavior consider using proceed command (`P <addr>`) or use single stepping instead.
 
 <h3 id="search-forward">F - Search forward</h3>
 
@@ -186,7 +186,7 @@ EXAMPLE:
 ```
 C &3000 &30FF &300A
 ```
-Copies data from address &3000 up to and including &30FF ten locations higher in memory.
+Copies data from address &3000 up to and including &30FF, ten locations higher in memory.
 
 <h3 id="disassemble">D - Disassemble memory</h3>
 
@@ -240,7 +240,7 @@ G <address>
 ```
 where _address_ is address where execution is to start.
 
-> If there are no breakpoints set, or non of the breakpoints has not been hit during the execution, and end of the debugged program is reached, then execution will jump out of GAD to the BASIC prompt. To avoid this behavior consider using proceed command (`P addr`) or use single stepping instead.
+> If there are no breakpoints set, or non of the breakpoints has not been hit during the execution, and end of the debugged program is reached, then execution will jump out of GAD to the BASIC prompt. To avoid this behavior consider using proceed command (`P <addr>`) or use single stepping instead.
 
 <h3 id="memory-dump">M - Memory dump</h3>
 
@@ -302,7 +302,7 @@ Searched string length is limited only by size of input buffer. Currently, maxim
 
 ## Limitations
 
-Co-executing two programs on a platform without memory protection certainly imposes some rules of good behavior for both of these programs. But there are some not so obvious limitations which will be listed here as well.
+Co-executing two programs on a platform which does not have memory protection certainly imposes some rules of good behavior for both of these programs. Yet there are some not so obvious limitations which will be listed here as well.
 
 ### Breakpoint implementation
 
