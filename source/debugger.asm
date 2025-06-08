@@ -8,7 +8,7 @@
 
 INBUFFERSIZE  = 30          ; Input buffer size
 NUMBRKS       = 4           ; Breakpoints number
-START_ADDR    = $2C3A       ; Initial dump and disassembler start address is set at the start of free memory
+START_ADDR    = $2C3A       ; Initial dump and disassembler start address is set at the beginning of free memory
 VERSION       = 3
 
   STRUCT brk
@@ -69,7 +69,7 @@ REGS_CURSOR_POS = VIDEORAM + $20
 DISASM_CURSOR_POS1 = VIDEORAM + $80 ; First disassembler line
 DISASM_CURSOR_POS2 = VIDEORAM + $100
 DISASM_CURSOR_POS6 = VIDEORAM + $120 ; Last (6th) disassembler line
-DISASM_POINTER_POS = DISASM_CURSOR_POS1 + 13 ; Character position before intruction mnemonic
+DISASM_POINTER_POS = DISASM_CURSOR_POS1 + 13 ; Character position before instruction mnemonic
 DUMP_CURSOR_POS = VIDEORAM + $140
 INPUT_CURSOR_POS = VIDEORAM + $1C0
 MSG_LINE_CPOS = VIDEORAM + $1E0
@@ -117,7 +117,7 @@ KeyLoop:
   jp z, TraceGo
   cp '/'                    ; Skip instruction
   call z, Skip
-  cp 'B'                   ; PC = PC - 1
+  cp 'B'                    ; PC = PC - 1
   jp z, TraceBack
   ld b, $01
   cp 'C'                    ; C = toggle Carry flag
@@ -175,42 +175,42 @@ ToggleFlags:
 GetInputLine:
   ld a, '>'
   ld de, IN_BUFFER          ; Load INPUT_BUFFER address into DE
-  rst $20		                ;	Display prompt '>'.
+  rst $20                   ; Display prompt '>'.
 .LoopCurs:
   push hl
   ld hl, (CURSORPOS)
   ld (hl), '_'
   pop hl
 .Loop:
-  call ReadKey	            ;	Read a key and print it
+  call ReadKey              ; Read a key and print it
   rst $20
   push hl
   ld hl, (CURSORPOS)
-  ld (hl), '_'	            ;	Print cursor
+  ld (hl), '_'              ; Print cursor
   pop hl
   cp CR
-  jr z, .Add                ;	ENTER pressed, jump to ADD
+  jr z, .Add                ; ENTER pressed, jump to ADD
   cp KEY_LEFT
-  jr z, .Backspace      	  ;	Left arrow pressed, jump to BACKSPACE
+  jr z, .Backspace      	  ; Left arrow pressed, jump to BACKSPACE
   cp $0C
-  jr z, GetInputLine        ;	SHIFT-DELETE pressed - begin from the start
+  jr z, GetInputLine        ; SHIFT-DELETE pressed - begin from the start
   cp $20
-  jr c, .Loop	              ;	Ignore if key code is less than $20
+  jr c, .Loop               ; Ignore if key code is less than $20
 .Add:
-  ld (de), a	              ;	Load ASCII code of the pressed key into the buffer
+  ld (de), a                ; Load ASCII code of the pressed key into the buffer
   inc de
-  cp CR 		                ;	If ENTER was pressed, return.
+  cp CR                     ; If ENTER was pressed, return.
   ret z
-  ld a, e		                ;	Compare lower byte of DE with end of buffer
+  ld a, e                   ; Compare lower byte of DE with end of buffer
   ; TODO Implement longer line input, with horizontal scrolling.
   cp (IN_BUFFER + INBUFFERSIZE) & $FF ; Input buffer start address plus its size. This is allowed command input length.
-  jr nz, .Loop	            ;	If end of buffer not reached,	then loop...
-  ld a, KEY_LEFT            ;	...else delete last pressed character from the screen and buffer
+  jr nz, .Loop              ; If end of buffer not reached,	then loop...
+  ld a, KEY_LEFT            ; ...else delete last pressed character from the screen and buffer
   rst $20
 .Backspace:
   ld a, e
-  cp IN_BUFFER & $FF        ;	Compare lower byte of DE with buffer start address
-  jr z, GetInputLine        ;	If not at start of buffer decrement DE
+  cp IN_BUFFER & $FF        ; Compare lower byte of DE with buffer start address
+  jr z, GetInputLine        ; If not at start of buffer decrement DE
   dec de
   jr .LoopCurs
 
@@ -263,7 +263,7 @@ GetInputCmd:
   jr nz, ShowWhatMsg        ; If there is 4th parameter
                             ; At this point command has three parameters
   pop bc                    ; 3 parameters: BC = third parameter, A will be 3 at the end
-  inc a                     ; A = 1 (previous A value is allways 0 because SUB $0D if there are no more parameters)
+  inc a                     ; A = 1 (previous A value is always 0 because SUB $0D if there are no more parameters)
 .Param2:
   pop de                    ; Command has two parameters: DE = second parameter, A = 2
   inc a
@@ -311,7 +311,7 @@ DisassembleCmd:
   jr nz, ShowWhatMsg        ; If not one parameter
   ld (PC_REG), hl           ; Set PC_REG to new address
 DisassembleFromHL:
-  call DisassemblerInit     ; HL = starting address privided by command parameter
+  call DisassemblerInit     ; HL = starting address provided by command parameter
   call ShowPointer
   jp KeyLoop
 
@@ -458,9 +458,9 @@ CopyMemCmd:
   jp nz, ShowWhatMsg        ; If not three parameters
   ex de, hl                 ; DE = start address, HL = end address
   or a
-  sbc hl, de                ; HL = section to be coppied length
+  sbc hl, de                ; HL = section to be copied length
   jp c, ShowHowMsg          ; If end is before start
-  inc hl                    ; Length + 1 (+1 will not be coppied)
+  inc hl                    ; Length + 1 (+1 will not be copied)
   push hl                   ; Length to stack
   push de                   ; Start address to stack
   ld d, b
@@ -510,7 +510,7 @@ SearchMemCmd:
   jr .ConvertHex
 .ConversionEnd:
   ld (hl), CR               ; CR marks the end of searched string
-  ; Move start and end address from stack to coresponding variables
+  ; Move start and end address from stack to corresponding variables
   pop de
   ld (SEARCH_END), de       ; Second command parameter
   pop hl
@@ -898,7 +898,7 @@ TraceCode:
 ; input: HL = PC_REG contents
 ;
 GoCmd:                      ; HL = execution start address
-  dec	a
+  dec a
   jp nz, ShowWhatMsg        ; If not one parameter
   jr GoFromHL
 
@@ -1022,7 +1022,7 @@ Break:
   ex de, hl                 ; Tracing from return address
 .InSandbox:
   jr TraceAddr
-.NotSandbox:                ; Not single steping, come here because execution hit the breakpoint or CALL Break in user code
+.NotSandbox:                ; Not single stepping, came here because execution hit the breakpoint or CALL Break in user code
   ld de, (PC_REG)
   dec de
   dec de
@@ -1129,7 +1129,7 @@ StrCmp: ; TODO This could be inlined where it is called from!
   ret nz
   inc de
   inc hl                    ; Next byte
-  dec c                     ; Decrement string lenght
+  dec c                     ; Decrement string length
   jr nz, StrCmp
   ret
 
@@ -1268,7 +1268,7 @@ CopyPtrMem:
 ;----------------------------------------------------------
 
 RemoveBreaks:
-  ld b, NUMBRKS             ; B = nuumber of breakpoints
+  ld b, NUMBRKS             ; B = number of breakpoints
   ld hl, BREAKPOINTS        ; HL = breakpoint array
 .Next:
   push hl
@@ -1287,7 +1287,7 @@ RemoveBreaks:
 ;      nz = not found
 ;
 FindBreak:
-  ld b, NUMBRKS             ; B = nuumber of breakpoints
+  ld b, NUMBRKS             ; B = number of breakpoints
   ld hl, BREAKPOINTS        ; HL = breakpoint array
 .Next:
   inc hl                    ; Skip brk.status
@@ -1387,7 +1387,7 @@ Trap:
   ld de, TRACE_INSTR        ; DE points to copy of instruction in sand box
   ld a, (de)                ; Get opcode
   cp $76                    ; 76 = HALT
-  dec hl                    ; If HALT then PC - 1 (this is controled loop forever from PC-1 to PC and back)
+  dec hl                    ; If HALT then PC - 1 (this is controlled loop forever from PC-1 to PC and back)
   ret z
   inc hl
   cp $FB                    ; FB = EI

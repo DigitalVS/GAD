@@ -24,11 +24,11 @@ VIDEORAM  = $2800 ; Start of video RAM, 512 bytes, 32x16 characters
 ;                          System Variables
 ;----------------------------------------------------------------------------
 ; Name          Location  Size(B) Init value          Description
-NUMERICVARS     = $2A00 ;  104    0        Numeric BASIC variables from A to Z, two bytes each
+NUMERICVARS     = $2A00 ;  104    0        Numeric BASIC variables from A to Z, four bytes each
 CURSORPOS       = $2A68 ;   2     $2800    Current cursor position in video RAM
 RAMTOP          = $2A6A ;   2     $3800 (for 4KB RAM) End of memory address
 SCREENSTART     = $2A6C ;   2     0        Start of video memory for scrolling.
-STRINGX         = $2A70 ;  16 	  0        BASIC X$ variable value
+STRINGX         = $2A70 ;  16     0        BASIC X$ variable value
 STRINGY         = $2A80 ;  16     0        BASIC Y$ variable value
 SHOWMEM         = $2A97 ;   2     0        Memory dump start address used by breakpoint command
 KBDDIFF         = $2AA5 ;   2     0        Keyboard differentiator (last two pressed keys)
